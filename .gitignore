@@ -1,0 +1,69 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+.venv/
+
+# VS Code settings
+.vscode/
+
+# macOS system files
+.DS_Store
+
+# Python cache
+*.pyc
+*.pyo
+
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints
+
+# Pip environment files
+pip-log.txt
+pip-delete-this-directory.txt
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pytest
+.pytest_cache/
+
+# Coverage reports
+htmlcov/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+
+# Build
+build/
+dist/
+*.egg-info/
+
+# Logs
+*.log
+
+# dotenv
+.env
+.env.*
+
+# PyInstaller
+*.spec
+
+# IDEs
+.idea/
+*.iml
+
+# Custom user data
+access_log.json
+users_database.pkl
+faces_data.pkl
+data
+log_files
