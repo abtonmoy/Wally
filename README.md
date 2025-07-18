@@ -235,7 +235,7 @@ This project was born from a summer of caffeine, determination, and a shared lov
 
 **🎯 Team Members:**
 
-- **Abdul Basit Tonmoy** - [@yabtonmoy](https://github.com/abtonmoy)
+- **Abdul Basit Tonmoy** - [@abtonmoy](https://github.com/abtonmoy)
 - **Gregory Powers** - [@amoldybuffalo](https://github.com/amoldybuffalo)
 
 **🏆 Summer 2025 Achievements:**
