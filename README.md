@@ -79,7 +79,7 @@ _tip: Make sure the wires are connected properly! The motor controlers are reall
 1. **Clone the repository:**
 
    ```bash
-   git clone <https://github.com/abtonmoy/Wally.git>
+   git clone https://github.com/abtonmoy/Wally.git
    cd WALLY
    ```
 
