@@ -3,17 +3,30 @@ import numpy as np
 import threading
 from threading import Thread
 import time
+import os
+from datetime import datetime
 
 class Camera:
-    def __init__(self, camera_id=0, width=640, height=480):
+    def __init__(self, camera_id=0, width=640, height=480, fps=30, auto_record=True):
         self.camera_id = camera_id
         self.width = width
         self.height = height
+        self.fps = fps
+        self.auto_record = auto_record  # New parameter to control automatic recording
         self.cap = None
         self.latest_frame = None
         self.detected_objects = []
         self.lock = threading.Lock()
         self.running = False
+        
+        # Video recording variables
+        self.video_writer = None
+        self.recording = False
+        self.video_filename = None
+        self.videos_dir = "videos"
+        
+        # Ensure videos directory exists
+        self._ensure_videos_directory()
         
         # Initialize object detection
         self.net = None
@@ -25,22 +38,91 @@ class Camera:
         self.load_yolo_model()
         self.initialize_camera()
     
-
+    def _ensure_videos_directory(self):
+        """Ensure the videos directory exists"""
+        try:
+            os.makedirs(self.videos_dir, exist_ok=True)
+            print(f"Videos directory ready: {os.path.abspath(self.videos_dir)}")
+        except Exception as e:
+            print(f"Warning: Could not create videos directory: {e}")
+            # Fallback to current directory
+            self.videos_dir = "."
+    
     def is_running(self):
         """Check if the camera is currently running and capturing frames"""
         return self.running and self.cap is not None and self.cap.isOpened()
+
+    def is_recording(self):
+        """Check if currently recording video"""
+        return self.recording and self.video_writer is not None
 
     def get_camera_status(self):
         """Get detailed camera status information"""
         status = {
             'running': self.running,
+            'recording': self.recording,
+            'video_filename': self.video_filename,
             'camera_initialized': self.cap is not None,
             'camera_opened': self.cap.isOpened() if self.cap else False,
             'has_latest_frame': self.latest_frame is not None,
             'objects_detected': len(self.detected_objects),
-            'yolo_loaded': self.net is not None
+            'yolo_loaded': self.net is not None,
+            'videos_directory': os.path.abspath(self.videos_dir),
+            'auto_record': self.auto_record
         }
         return status
+
+    def start_recording(self, filename=None):
+        """Start recording video to file"""
+        if self.recording:
+            print("Already recording. Stop current recording first.")
+            return False
+        
+        if filename is None:
+            # Generate filename with current date and time
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            filename = f"recording_{timestamp}.mp4"
+        
+        # Ensure filename doesn't already exist
+        counter = 1
+        base_name = filename.replace('.mp4', '')
+        while os.path.exists(os.path.join(self.videos_dir, filename)):
+            filename = f"{base_name}_{counter}.mp4"
+            counter += 1
+        
+        self.video_filename = os.path.join(self.videos_dir, filename)
+        
+        # Define codec and create VideoWriter
+        fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+        self.video_writer = cv2.VideoWriter(
+            self.video_filename, 
+            fourcc, 
+            self.fps, 
+            (self.width, self.height)
+        )
+        
+        if not self.video_writer.isOpened():
+            print(f"Error: Could not open video writer for {self.video_filename}")
+            return False
+        
+        self.recording = True
+        print(f"Started recording to: {self.video_filename}")
+        return True
+
+    def stop_recording(self):
+        """Stop recording video"""
+        if not self.recording:
+            print("Not currently recording.")
+            return False
+        
+        self.recording = False
+        if self.video_writer:
+            self.video_writer.release()
+            self.video_writer = None
+        
+        print(f"Stopped recording. Video saved to: {self.video_filename}")
+        return True
+
     def load_yolo_model(self):
         """Load YOLO model for object detection"""
         try:
@@ -83,7 +165,8 @@ class Camera:
         
         self.cap.set(cv2.CAP_PROP_FRAME_WIDTH, self.width)
         self.cap.set(cv2.CAP_PROP_FRAME_HEIGHT, self.height)
-        print(f"Camera initialized: {self.width}x{self.height}")
+        self.cap.set(cv2.CAP_PROP_FPS, self.fps)
+        print(f"Camera initialized: {self.width}x{self.height} @ {self.fps}fps")
     
     def detect_objects_yolo(self, frame):
         """Detect objects using YOLO"""
@@ -305,6 +388,38 @@ class Camera:
         
         return filtered
     
+    def _draw_detections_on_frame(self, frame, objects):
+        """Draw bounding boxes and labels on frame"""
+        for obj in objects:
+            x, y, w, h = obj['bbox']
+            label = obj['label']
+            confidence = obj['confidence']
+            
+            # Choose color based on label
+            if self.net is not None and label in self.classes:
+                color = self.colors[self.classes.index(label)]
+            else:
+                # Default colors for simple detection
+                color_map = {
+                    'moving_object': (0, 255, 0),
+                    'red_object': (0, 0, 255),
+                    'blue_object': (255, 0, 0),
+                    'green_object': (0, 255, 0),
+                    'yellow_object': (0, 255, 255),
+                    'edge_object': (128, 128, 128)
+                }
+                color = color_map.get(label, (255, 255, 255))
+            
+            # Draw bounding box
+            cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
+            
+            # Draw label
+            label_text = f"{label}: {confidence:.2f}"
+            cv2.putText(frame, label_text, (x, y - 10), 
+                       cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
+        
+        return frame
+    
     def _capture_loop(self):
         """Main capture loop running in separate thread"""
         while self.running:
@@ -319,24 +434,43 @@ class Camera:
             else:
                 objects = self.detect_objects_simple(frame)
             
+            # Record frame with detections if recording is active
+            if self.recording and self.video_writer:
+                frame_with_detections = self._draw_detections_on_frame(frame.copy(), objects)
+                self.video_writer.write(frame_with_detections)
+            
             # Update shared data
             with self.lock:
                 self.latest_frame = frame.copy()
                 self.detected_objects = objects
             
-            time.sleep(0.03)  # ~30 FPS
+            time.sleep(1.0 / self.fps)  # Control frame rate
     
     def start(self):
         """Start camera capture and object detection"""
-        self.initialize_camera()
+        if not self.cap or not self.cap.isOpened():
+            self.initialize_camera()
+        
         self.running = True
         self.capture_thread = Thread(target=self._capture_loop, daemon=True)
         self.capture_thread.start()
         print("Camera started")
+        
+        # Auto-start recording if enabled
+        if self.auto_record:
+            if self.start_recording():
+                print("Auto-recording started - videos will be saved automatically")
+            else:
+                print("Warning: Auto-recording failed to start")
     
     def stop(self):
-        """Stop camera capture"""
+        """Stop camera capture and recording"""
         self.running = False
+        
+        # Stop recording if active
+        if self.recording:
+            self.stop_recording()
+        
         if self.cap:
             self.cap.release()
         print("Camera stopped")
@@ -358,25 +492,7 @@ class Camera:
                 return None
             
             frame = self.latest_frame.copy()
-            
-            for obj in self.detected_objects:
-                x, y, w, h = obj['bbox']
-                label = obj['label']
-                confidence = obj['confidence']
-                
-                # Draw bounding box
-                color = (0, 255, 0)  # Green
-                if self.net is not None and len(self.colors) > 0:
-                    class_idx = hash(label) % len(self.colors)
-                    color = self.colors[class_idx]
-                
-                cv2.rectangle(frame, (x, y), (x + w, y + h), color, 2)
-                
-                # Draw label
-                text = f"{label}: {confidence:.2f}"
-                cv2.putText(frame, text, (x, y - 10), cv2.FONT_HERSHEY_SIMPLEX, 0.5, color, 2)
-            
-            return frame
+            return self._draw_detections_on_frame(frame, self.detected_objects)
     
     def find_objects_by_label(self, target_label):
         """Find specific objects by label"""
@@ -391,33 +507,46 @@ class Camera:
             
             largest_obj = max(self.detected_objects, key=lambda obj: obj['bbox'][2] * obj['bbox'][3])
             return largest_obj
+  
+    def list_recorded_videos(self):
+        """List all recorded videos in the videos directory"""
+        if not os.path.exists(self.videos_dir):
+            return []
+        
+        videos = [f for f in os.listdir(self.videos_dir) if f.endswith('.mp4')]
+        videos.sort(reverse=True)  # Most recent first
+        return videos
 
-# Example usage
+# Example usage (headless mode)
 if __name__ == "__main__":
-    camera = Camera()
+    # Camera will automatically start recording when started
+    camera = Camera(auto_record=True)
     
     try:
         camera.start()
+        print("Camera started with automatic recording enabled (headless mode)")
+        print(f"Videos are being saved to: {camera.videos_dir}")
+        print("Press Ctrl+C to stop")
         
         while True:
             # Get detected objects
             objects = camera.get_objects()
+            status = camera.get_camera_status()
+            
             if objects:
                 print(f"Detected {len(objects)} objects:")
                 for obj in objects:
                     print(f"  - {obj['label']}: {obj['confidence']:.2f} at {obj['center']}")
             
-            # Display frame with detections (optional)
-            frame = camera.get_frame_with_detections()
-            if frame is not None:
-                cv2.imshow('Object Detection', frame)
-                if cv2.waitKey(1) & 0xFF == ord('q'):
-                    break
+            # Show status periodically (every 30 seconds)
+            if int(time.time()) % 30 == 0:
+                print(f"Recording status: {'Recording' if camera.is_recording() else 'Not recording'}")
+                print(f"Total videos: {len(camera.list_recorded_videos())}")
             
-            time.sleep(0.1)
+            time.sleep(1.0)  # Check every second
     
     except KeyboardInterrupt:
-        print("Stopping...")
+        print("\nStopping...")
     finally:
         camera.stop()
-        cv2.destroyAllWindows()
+        print("Final recorded videos:", camera.list_recorded_videos())

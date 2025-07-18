@@ -6,22 +6,13 @@ from devices.compass import Compass
 from devices.gps import GPS
 from devices.lidar import Lidar
 from devices.camera import Camera  # Add camera import
-from devices.ultrasonic import UltrasonicSensor
+#from devices.ultrasonic import UltrasonicSensor
 from navigation.ftg import FollowTheGapWorker
 from navigation.waypoint import WaypointNavigator
-from navigation.vision import HybridNavigator
-import Jetson.GPIO as GPIO
+from navigation.navigation_vision_enhanced import HybridNavigator
+from navigation.main_navigation import EnhancedHybridNavigator
 
 def main():
-    GPIO.setmode(GPIO.BOARD) 
-    # Initialize devices
-    right_uv = UltrasonicSensor(11, 13, 1)
-    #left_uv = UltrasonicSensor(15, 16)
-    while True:
-        print(right_uv.get_distance())
-        #print(left_uv.get_distance())
-        time.sleep(1)
-    sys.exit(0)
     compass = Compass()
     gps = GPS()
     lidar = Lidar("/dev/ttyUSB2")
@@ -29,7 +20,7 @@ def main():
     
     # Initialize navigation components
     ftg = FollowTheGapWorker(lidar)
-    waypoint = WaypointNavigator(gps, compass, [(40.0370259, -86.90659)])
+    waypoint = WaypointNavigator(gps, compass, [(40.036920, -86.907327), (40.0368575, -86.9073315),(40.0367538, -86.9071431)])
     
     # Connect to Arduino and start navigation
     try:
@@ -38,7 +29,7 @@ def main():
             print("Connected to Arduino")
             
             # Create hybrid navigator with all required parameters
-            nav = HybridNavigator(
+            nav = EnhancedHybridNavigator(
                 base_speed=60,
                 ftg_navigator=ftg,
                 waypoint_navigator=waypoint,
