@@ -229,6 +229,10 @@ The system is designed to be both secure and user-friendly, with privacy as a co
 
 This project was born from a summer of caffeine, determination, and a shared love of robotics! 🌟
 
+**🔬 Research and Project Supervisor:**
+
+- **Dr. Qixin Deng** - dengq@wabash.edu
+
 **🎯 Team Members:**
 
 - **Abdul Basit Tonmoy** - [@yabtonmoy](https://github.com/abtonmoy)
@@ -236,6 +240,7 @@ This project was born from a summer of caffeine, determination, and a shared lov
 
 **🏆 Summer 2025 Achievements:**
 
+- ✅ Created the whole platform from ground up
 - ✅ Successfully implemented hybrid navigation system
 - ✅ Built robust face recognition security system
 - ✅ Created seamless Jetson Nano + Arduino integration
@@ -256,7 +261,6 @@ Before this internship, none of us had any kind of prior experience in robotics.
 - 🎵 **Voice Commands**: "WALLY, go to the kitchen!"
 - 🤖 **Machine Learning**: Better obstacle prediction
 - 🔋 **Battery Monitoring**: Smart power management
-- 📡 **Wireless Communication**: Cut the USB cord!
 
 ## 🎨 Contributing
 
