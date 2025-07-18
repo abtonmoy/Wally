@@ -61,7 +61,7 @@ Our WALLY is equipped with some serious tech:
 | 📡 **GPS Module**        | Location tracking                  | ✅ Positioning        |
 | 🔋 **20Ah 12V Battery**  | Power supply                       | ✅ Energy source      |
 | 📡 **RPLidar A1**        | 360° obstacle detection            | ✅ Obstacle avoidance |
-| 📷 **Logitech Webcam**   | Computer vision & face recognition | ✅ Vision system      |
+| 📷 **Logitech Webcam**   | navigation, Computer vision & face recognition | ✅ Vision system      |
 | 📏 **Ultrasonic Sensor** | Backup proximity detection         | 🔄 Optional           |
 
 _tip: Make sure the wires are connected properly! The motor controlers are really fragile; be careful with it!_
