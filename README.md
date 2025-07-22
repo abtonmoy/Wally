@@ -1,9 +1,9 @@
-                              ██╗    ██╗ █████╗ ██╗     ██╗     ██╗   ██╗
-                              ██║    ██║██╔══██╗██║     ██║     ╚██╗ ██╔╝
-                              ██║ █╗ ██║███████║██║     ██║      ╚████╔╝
-                              ██║███╗██║██╔══██║██║     ██║       ╚██╔╝
-                              ╚███╔███╔╝██║  ██║███████╗███████╗   ██║
-                              ╚══╝╚══╝ ╚═╝  ╚═╝╚══════╝╚══════╝   ╚═╝
+      ██╗    ██╗ █████╗ ██╗     ██╗     ██╗   ██╗
+      ██║    ██║██╔══██╗██║     ██║     ╚██╗ ██╔╝
+      ██║ █╗ ██║███████║██║     ██║      ╚████╔╝
+      ██║███╗██║██╔══██║██║     ██║       ╚██╔╝
+      ╚███╔███╔╝██║  ██║███████╗███████╗   ██║
+      ╚══╝╚══╝ ╚═╝  ╚═╝╚══════╝╚══════╝   ╚═╝
 
 # 🤖 WALLY
 
@@ -59,17 +59,17 @@ WALLY/
 
 Our WALLY is equipped with some serious tech:
 
-| Component                | Purpose                            | Status                |
-| ------------------------ | ---------------------------------- | --------------------- |
-| 🖥️ **Jetson Nano**       | AI brain for navigation & vision   | ✅ Primary compute    |
-| 🔌 **Arduino Mega**      | Motor control & sensor interface   | ✅ Motor controller   |
-| ⚡ **Polulu Motors**     | Movement and power                 | ✅ Locomotion         |
-| 🧭 **Digital Compass**   | Heading information                | ✅ Navigation         |
-| 📡 **GPS Module**        | Location tracking                  | ✅ Positioning        |
-| 🔋 **20Ah 12V Battery**  | Power supply                       | ✅ Energy source      |
-| 📡 **RPLidar A1**        | 360° obstacle detection            | ✅ Obstacle avoidance |
+| Component                | Purpose                                        | Status                |
+| ------------------------ | ---------------------------------------------- | --------------------- |
+| 🖥️ **Jetson Nano**       | AI brain for navigation & vision               | ✅ Primary compute    |
+| 🔌 **Arduino Mega**      | Motor control & sensor interface               | ✅ Motor controller   |
+| ⚡ **Polulu Motors**     | Movement and power                             | ✅ Locomotion         |
+| 🧭 **Digital Compass**   | Heading information                            | ✅ Navigation         |
+| 📡 **GPS Module**        | Location tracking                              | ✅ Positioning        |
+| 🔋 **20Ah 12V Battery**  | Power supply                                   | ✅ Energy source      |
+| 📡 **RPLidar A1**        | 360° obstacle detection                        | ✅ Obstacle avoidance |
 | 📷 **Logitech Webcam**   | navigation, Computer vision & face recognition | ✅ Vision system      |
-| 📏 **Ultrasonic Sensor** | Backup proximity detection         | 🔄 Optional           |
+| 📏 **Ultrasonic Sensor** | Backup proximity detection                     | 🔄 Optional           |
 
 _tip: Make sure the wires are connected properly! The motor controlers are really fragile; be careful with it!_
 
