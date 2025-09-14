@@ -14,7 +14,7 @@ OBSTACLE_COLOR = (0,255, 0)
 pygame.init()
 
 # Constants
-WIDTH, HEIGHT = 800, 600
+WIDTH, HEIGHT = 1280, 720
 FPS = 60
 delta_time = 1/FPS
 BG_COLOR = (0, 0, 0)
@@ -166,7 +166,7 @@ def draw():
 def nav_loop(smoothness):
     while True:
         state["old_coords"] = copy.copy(bot.coords)
-        bot.set_speed(50)
+        bot.set_speed(100)
         time.sleep(1/smoothness)
         bot.set_speed(0)
         turning_angle = Vector.angle_between(state["real_vector"], state["error"])
@@ -177,6 +177,7 @@ t = threading.Thread(target=nav_loop, args=[10])
 t.start()
 
 running = True
+time.sleep(10)
 while running:
     clock.tick(FPS)
 

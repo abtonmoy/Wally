@@ -10,12 +10,14 @@
 > _"AUTO... WALLY"_ - But this time, he's got GPS, LiDAR, and face recognition! 🚀
 
 ## 📖 Overview
-
-![WALLY in action](output.gif)
+![WALLY in action](assets/output.gif)
 
 Meet WALLY! This isn't your average trash-compacting robot (from the WALL-E movie). Our WALLY is a sophisticated mobile robot that combines GPS waypoint navigation, obstacle avoidance using LiDAR and computer vision, plus a face recognition security system that would make any sci-fi movie proud.
 
 Originally designed as an autonomous delivery robot, WALLY's modular architecture makes it perfect for repurposing into various applications - from security patrol bots to enviromental data collection and research platforms. Built on a Jetson Nano brain 🧠 with Arduino Mega muscles 💪, this robot can navigate complex environments while keeping unauthorized users at bay. It's like having a personal bodyguard that also happens to be great at not bumping into things!
+
+## 🕹️  Simulation
+![WALLY simulation](assets/navigation.gif)
 
 ## 📁 Project Structure
 
